@@ -6,6 +6,7 @@ public class SpawnManager : MonoBehaviour
 {
     public GameObject powerUpPrefab;
     public GameObject obstaclePrefab;
+    public GameObject starPrefab;
 
     public int powerUpCount = 3;
     public int obstacleCount = 10;
@@ -42,5 +43,6 @@ public class SpawnManager : MonoBehaviour
         {
             Instantiate(obstaclePrefab, GenerateSpawnPosition(), obstaclePrefab.transform.rotation);
         }
+        Instantiate(starPrefab, new Vector3(0,2,50), starPrefab.transform.rotation);
     }
 }

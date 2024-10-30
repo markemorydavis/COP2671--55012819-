@@ -22,15 +22,34 @@ public class PlayerController : MonoBehaviour
     public int maxBadHits = 3;
 
     public GameObject powerUpEffect;
+    public GameObject starEffect;
 
     public ParticleSystem particleEffect;
     public ParticleSystem explosionParticle;
+
+    // Audio
+    public AudioClip startUpSound;
+    public AudioClip idleSound;
+    public AudioClip crashSound;
+    public AudioClip shootSound;
+    public AudioClip powerUpSound;
+
+    private AudioSource playerAudio;
+
+
 
     // Reference to the particle system
 
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
+        playerAudio = GetComponent<AudioSource>();
+        playerAudio.PlayOneShot(startUpSound, 1.4f);
+
+        // Set up the idle sound to loop, but don’t start playing it immediately
+        playerAudio.clip = idleSound;
+        playerAudio.loop = true;
+        playerAudio.Play();
     }
 
     // Update is called once per frame
@@ -44,14 +63,17 @@ public class PlayerController : MonoBehaviour
         transform.Translate(Vector3.forward * Time.deltaTime * speed * forwardInput);
         transform.Rotate(Vector3.up, turnSpeed * horizontalInput * Time.deltaTime);
 
+
+
         if (Input.GetKeyDown(KeyCode.Space) && canShoot)
         {
             Shoot();
         }
 
-        if(playerRb.position.z >= 340)
+
+        if (IsOffRoad())
         {
-            playerRb.position = new Vector3(0, 0, 0);
+            GameOver();
         }
 
     }
@@ -68,6 +90,7 @@ public class PlayerController : MonoBehaviour
         {
             // Add velocity to the projectile to make it move forward
             rb.velocity = shootingPoint.forward * projectileSpeed;
+            playerAudio.PlayOneShot(shootSound, 1.4f);
         }
 
         //Destroy object after some time
@@ -81,6 +104,7 @@ public class PlayerController : MonoBehaviour
             Destroy(collision.gameObject);
             badObjectHitCount++; // Increase the hit counter
             explosionParticle.Play();
+            playerAudio.PlayOneShot(crashSound, 1.4f);
 
             Debug.Log("Bad Obstacle Hit! Lives Remaining: " + (3-badObjectHitCount));
 
@@ -96,12 +120,23 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log("Power Up Attained!");
 
+            playerAudio.PlayOneShot(powerUpSound, 1.4f);
+
             canShoot = true;
             Destroy(collision.gameObject);
 
             powerUpEffect.SetActive(true);
 
             StartCoroutine(PowerUpDuration(5f));
+        }
+        else if (collision.gameObject.CompareTag("Star"))
+        {
+            Debug.Log("Star Collected!");
+            starEffect.SetActive(true);
+            Destroy(collision.gameObject);
+
+            //not implemented yet but player will have to deposit star by contacting it with dumpster at the end of the road
+
         }
     }
     private void GameOver()
@@ -123,5 +158,18 @@ public class PlayerController : MonoBehaviour
         powerUpEffect.SetActive(false);
         Debug.Log("Power Up Expired!");
     }
+
+    private bool IsOffRoad()
+    {
+        if(playerRb.position.y < -10)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
 
 }
