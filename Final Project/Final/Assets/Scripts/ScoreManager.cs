@@ -11,7 +11,10 @@ public class ScoreManager : MonoBehaviour
 
     private int score = 0;
 
-
+    public void ResetScore()
+    {
+        scoreText.text = "Score: 0";
+    }
 
     public void AddPoints(int points)
     {

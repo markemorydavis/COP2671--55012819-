@@ -12,13 +12,8 @@ public class SpawnManager : MonoBehaviour
     public int obstacleCount = 10;
 
     private float spawnRangeX = 7;
+    private List<GameObject> spawnedObjects = new List<GameObject>();
 
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        SpawnObjects(0);
-    }
 
     // Update is called once per frame
     void Update()
@@ -37,22 +32,42 @@ public class SpawnManager : MonoBehaviour
     {
         for (int i = 0; i < powerUpCount ; i++)
         {
-            Instantiate(powerUpPrefab, GenerateSpawnPosition(), powerUpPrefab.transform.rotation);
+            GameObject spawnedPowerUp = Instantiate(powerUpPrefab, GenerateSpawnPosition(), powerUpPrefab.transform.rotation);
+            spawnedObjects.Add(spawnedPowerUp);
         }
         if (rate > 0)
         {
             for (int i = 0; i < obstacleCount * rate; i++)
             {
-                Instantiate(obstaclePrefab, GenerateSpawnPosition(), obstaclePrefab.transform.rotation);
+                 GameObject spawnedObstacle = Instantiate(obstaclePrefab, GenerateSpawnPosition(), powerUpPrefab.transform.rotation);
+                 spawnedObjects.Add(spawnedObstacle);
             }
         }
         else
         {
             for (int i = 0; i < obstacleCount; i++)
             {
-                Instantiate(obstaclePrefab, GenerateSpawnPosition(), obstaclePrefab.transform.rotation);
+                GameObject spawnedObstacle = Instantiate(obstaclePrefab, GenerateSpawnPosition(), powerUpPrefab.transform.rotation);
+                spawnedObjects.Add(spawnedObstacle);
             }
         }
-        Instantiate(starPrefab, new Vector3(0,2,50), starPrefab.transform.rotation);
+        GameObject spawnedStar = Instantiate(starPrefab, new Vector3(0,2,50), starPrefab.transform.rotation);
+        spawnedObjects.Add(spawnedStar);
     }
+
+    public void ClearAllPrefabs()
+    {
+        foreach (GameObject obj in spawnedObjects)
+        {
+            if (obj != null)
+            {
+                DestroyImmediate(obj);
+            }
+        }
+
+        // Clear list
+        spawnedObjects.Clear();
+    }
+
+
 }

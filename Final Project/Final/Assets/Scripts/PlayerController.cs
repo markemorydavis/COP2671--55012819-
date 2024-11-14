@@ -50,13 +50,15 @@ public class PlayerController : MonoBehaviour
         playerAudio = GetComponent<AudioSource>();
         playerAudio.PlayOneShot(startUpSound, 1.4f);
 
+        
+
+    }
+    public void PlayStartSound()
+    {
         // Set up the idle sound to loop, but don’t start playing it immediately
         playerAudio.clip = idleSound;
         playerAudio.loop = true;
         playerAudio.Play();
-
-        
-
     }
     // Update is called once per frame
     void Update()
@@ -79,7 +81,8 @@ public class PlayerController : MonoBehaviour
 
         if (IsOffRoad())
         {
-            GameOver();
+            gameManager.GameOver();
+            badObjectHitCount = 0;
         }
 
     }
@@ -120,7 +123,8 @@ public class PlayerController : MonoBehaviour
             if (badObjectHitCount >= maxBadHits)
             {
                 Debug.Log("Game Over! Player hit 3 Bad objects.");
-                GameOver(); // Stop the game when the player hits 3 bad objects
+                gameManager.GameOver();
+                badObjectHitCount = 0;
             }
 
         }
@@ -174,14 +178,6 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    private void GameOver()
-    {
-        // Stop time to freeze the game
-        Time.timeScale = 0f;
-        explosionParticle.Play();
-        // Optionally display a Game Over message
-        Debug.Log("Game Over");
-    }
 
     private System.Collections.IEnumerator PowerUpDuration(float duration)
     {
@@ -204,6 +200,13 @@ public class PlayerController : MonoBehaviour
         {
             return false;
         }
+    }
+
+    public void ResetPlayer()
+    {
+        powerUpEffect.SetActive(false);
+        starEffect.SetActive(false);
+        canShoot = false;
     }
 
 
